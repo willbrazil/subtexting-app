@@ -1,11 +1,8 @@
 package will.subtexting;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.util.Log;
 
@@ -22,7 +19,9 @@ public class GCMBroadcastReceiver extends BroadcastReceiver {
 
         String localId = intent.getStringExtra("local_id");
         Log.d(BR_LOG, "Received. Local Id: " + localId);
-        String number = getNumber(context, localId);
+        String number = ContactManager.getInstance().getNumber(context, localId);
+
+        Log.d("test", "number: " + number);
 
         if(number != null) {
             SmsManager.getDefault().sendTextMessage(number, null, intent.getStringExtra("body"), null, null);
@@ -30,26 +29,4 @@ public class GCMBroadcastReceiver extends BroadcastReceiver {
         }
 
     }
-
-    public String getNumber(Context context, String contactId) {
-
-        String number = null;
-
-        ContentResolver mContentResolver = context.getContentResolver();
-        Cursor cursor = mContentResolver.query(
-                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                null,
-                ContactsContract.CommonDataKinds.Phone._ID +" = ?",
-                new String[] {contactId}, null);
-
-        if (cursor.getCount() > 0){
-            cursor.moveToNext();
-            number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-        }
-
-        cursor.close();
-        return number;
-
-    }
-
 }

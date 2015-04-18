@@ -9,10 +9,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
+import com.github.kevinsawicki.http.HttpRequest;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class UploadContactsActivity extends Activity {
@@ -22,6 +26,7 @@ public class UploadContactsActivity extends Activity {
     ListView selectContactList;
     ArrayList<Contact> contacts;
     HashMap<Long, Contact> selected;
+    ArrayAdapter<Contact> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +40,7 @@ public class UploadContactsActivity extends Activity {
 
         selectContactList = (ListView) findViewById(R.id.activity_upload_contacts_list);
 
-        final ArrayAdapter<Contact> adapter = new UploadContactListArrayAdapter(getApplicationContext(), contacts, selected);
+        adapter = new UploadContactListArrayAdapter(getApplicationContext(), contacts, selected);
         selectContactList.setAdapter(adapter);
 
         selectContactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -76,6 +81,52 @@ public class UploadContactsActivity extends Activity {
     }
 
 
+    public void upload(View view) {
+
+        final StringBuilder sb = new StringBuilder();
+        sb.append("{");
+
+        for(Contact c : selected.values()) {
+            if(c != null) {
+                Log.d("contacts", c.getLocalId() + ": " + c.getName());
+                sb.append("\""+ c.getLocalId() +"\":\""+ c.getName() +"\", ");
+            }
+        }
+        sb.deleteCharAt(sb.length()-2);
+        sb.append("}");
+
+        new AsyncTask<Void, Void, Integer>() {
+            @Override
+            protected Integer doInBackground(Void... params) {
+
+                Map<String, String> data = new HashMap<String, String>();
+                data.put("contact_list", sb.toString());
+
+                HttpRequest req = HttpRequest.post("http://52.11.152.202:80/contacts").basic("will", "7z92bx1a").form(data);
+
+                int code = req.code();
+                Log.d("req", "req: " + req.body());
+                Log.d("req", "code: " + req.code());
+
+                return code;
+            }
+
+            @Override
+            protected void onPostExecute(Integer integer) {
+
+                if(integer == 200) {
+                    Toast.makeText(getApplicationContext(), "Contacts uploaded!", Toast.LENGTH_SHORT).show();
+                    selected.clear();
+                    adapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Failed.", Toast.LENGTH_SHORT).show();
+                }
+
+                super.onPostExecute(integer);
+            }
+        }.execute();
+
+    }
 
 
 }

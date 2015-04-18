@@ -41,6 +41,23 @@ public class ContactManager {
         return contact;
     }
 
+    public String getNumber(Context context, String localId) {
+        String number = null;
+
+        Uri uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI;
+        Cursor cursor = context.getContentResolver().query(uri, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?", new String[] {localId}, null, null);
+
+        Contact contact = null;
+        if(cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            number = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
+        }
+
+        cursor.close();
+
+        return number;
+    }
+
     public List<Contact> getMostLikelyContacts(Context context, int max) {
 
         ArrayList<Contact> contacts = new ArrayList<>();
