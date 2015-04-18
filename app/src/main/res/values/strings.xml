@@ -4,5 +4,10 @@
     <string name="app_name">SubTexting</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="username_hint">Username</string>
+    <string name="key_hint">Key</string>
+    <string name="activity_main_select_contacts_btn_text">Select Contacts</string>
+    <string name="title_activity_upload_contacts">UploadContactsActivity</string>
 
 </resources>
