@@ -102,7 +102,7 @@ public class UploadContactsActivity extends Activity {
                 Map<String, String> data = new HashMap<String, String>();
                 data.put("contact_list", sb.toString());
 
-                HttpRequest req = HttpRequest.post("http://52.11.152.202:80/contacts").basic("will", "7z92bx1a").form(data);
+                HttpRequest req = HttpRequest.post("http://52.11.152.202:80/contacts").basic(PreferencesManager.getUsername(getApplicationContext()), PreferencesManager.getPassword(getApplicationContext())).form(data);
 
                 int code = req.code();
                 Log.d("req", "req: " + req.body());

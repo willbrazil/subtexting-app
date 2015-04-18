@@ -11,7 +11,6 @@ import com.github.kevinsawicki.http.HttpRequest;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import java.io.IOException;
-import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -131,9 +130,10 @@ public class GCMSetup {
                 data.put("password", key);
                 data.put("registration_id", id);
                 try {
-                    int response = HttpRequest.post("http://52.11.152.202:80/registration_id").form(data).code();
+                    int response = HttpRequest.post("http://52.11.152.202:80/registration_id").basic(username, key).form(data).code();
                     if(response == 200) {
                         Log.d(TAG, "Added to server.");
+                        PreferencesManager.setCreds(context, username, key);
                         setRegistered(context);
                     } else {
                         Log.d(TAG, "Response: " + response);
